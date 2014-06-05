@@ -43,11 +43,8 @@
 typedef unsigned char byte;
 extern "C" void __cxa_pure_virtual() {;}
 
-void pulseSensor(void);
-void initialisePorts(void);
 //
 //
-void serialEvent();
 
 #include "C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\arduino.h"
 #include "C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\leonardo\pins_arduino.h" 
