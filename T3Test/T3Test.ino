@@ -1,5 +1,6 @@
 #define CAPTURE 13
 #define TRIG 3
+//just a comment
 #define ledPin 2
 
 volatile unsigned int pulseWidth = 2013;
