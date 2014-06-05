@@ -1,10 +1,8 @@
+//new test
 #define CAPTURE 13
 #define TRIG 3
-//just a comment
 #define ledPin 2
-//new pull
 volatile unsigned int pulseWidth = 2013;
-//new copy
 void setup()
 {
   pinMode(CAPTURE, INPUT);
