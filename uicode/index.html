@@ -12,6 +12,8 @@
 		
 		<script>
 		$(document).ready(function(){
+			var mycube = new TheCube();
+			mycube.kickoffcube();
 			// Initialize Flot data points
 			var totalPoints = 1000;
 			var resX = [];
@@ -46,8 +48,7 @@
 					var parsedArray = str_parser.exec(msg)
 					var valX = (parseFloat(parsedArray[1]));
 					var valY = (parseFloat(parsedArray[2]));
-					x = valX;
-					y = valY;
+					mycube.setRotation(valX, valY);
 					// Put sensor value to the 'sensor_value' span
 					$('#sensor_value').html(valX);
 					
