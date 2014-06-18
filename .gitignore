@@ -3,5 +3,6 @@
 !/T3Test/
 !/sonarCaptureT3/
 !/myStepperControl/
+!/libraries/
 !/uicode
 !/.gitignore
