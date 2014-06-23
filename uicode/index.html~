@@ -30,7 +30,7 @@
 			// Options for Flot plot
 			var options = {
 				series: { shadowSize: 0 }, // drawing is faster without shadows
-				yaxis: { min: -180, max: 180 },
+				yaxis: { min: 0, max: 100 },
 				xaxis: { show: false }
 			};
 			var plot = $.plot($("#placeholder"), getInitData(), options);

@@ -73,7 +73,7 @@ var TheCube = function () {
 		requestAnimationFrame(render);
 
 		cube.rotation.x = Math.radians(x);
-		cube.rotation.z = -Math.radians(y)
+		cube.rotation.z = Math.radians(y)
 
 			this.renderer.render(this.scene, this.camera);
 	};
