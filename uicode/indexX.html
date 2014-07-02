@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Slider - Vertical slider</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+  <script>
+  $( document ).ready(function() {
+	$( "#elem" ).progressbar({ value: 20 });
+    $( "#slider-vertical1" ).slider({
+      orientation: "vertical",
+      range: "min",
+      min: 0,
+      max: 100,
+      value: 80,
+      slide: function( event, ui ) {
+        $( "#amount1" ).val( ui.value );
+      }
+    });
+    $( "#slider-vertical2" ).slider({
+      orientation: "vertical",
+      range: "min",
+      min: 0,
+      max: 100,
+      value: 60,
+      slide: function( event, ui ) {
+        $( "#amount2" ).val( ui.value );
+      }
+    });
+    $( "#slider-vertical3" ).slider({
+      orientation: "vertical",
+      range: "min",
+      min: 0,
+      max: 100,
+      value: 20,
+      slide: function( event, ui ) {
+        $( "#amount3" ).val( ui.value );
+      }
+    });
+    $( "#amount1" ).val( $( "#slider-vertical1" ).slider( "value" ) );
+    $( "#amount2" ).val( $( "#slider-vertical2" ).slider( "value" ) );
+    $( "#amount3" ).val( $( "#slider-vertical3" ).slider( "value" ) );
+	$( "#setvalue" ).click(function() {
+      //spinner.spinner( "value", 5 );
+	  $( "#slider-vertical3" ).slider( "value" , 30)
+		$( "#amount3" ).val( $( "#slider-vertical3" ).slider( "value" ) );
+	  console.log("set value");
+    });
+  });
+  </script>
+</head>
+<body>
+	<table style="width:100px">
+		<tr>
+			<td>
+				<label for="amount1">P:</label>
+				<input type="text" id="amount1" readonly style="border:0; color:#f6931f; font-weight:bold;">
+			</td>
+			<td>
+				<label for="amount2">I:</label>
+				<input type="text" id="amount2" readonly style="border:0; color:#f6931f; font-weight:bold;">
+			</td>	
+			<td>
+				<label for="amount3">D:</label>
+				<input type="text" id="amount3" readonly style="border:0; color:#f6931f; font-weight:bold;">
+			</td>		
+		</tr>
+		<tr>
+		  <td>
+				<div id="slider-vertical1" style="height:200px;"></div>
+		  </td>
+		  <td>
+				<div id="slider-vertical2" style="height:200px;"></div>
+		  </td>
+		  <td>
+				<div id="slider-vertical3" style="height:200px;"></div>
+		  </td>
+		</tr>
+	</table>
+	<p>
+		<button id="setvalue">Set value</button>
+	</p>
+	<div id="elem"></div>
+</body>
+</html>
