@@ -15,7 +15,9 @@ app.set('views', __dirname + '/');
 app.use(express.static(__dirname + '/'));
 
 app.get('/', function (req, res) {
-	res.sendfile('index.html');
+	var homePage = process.argv[2]? process.argv[2]: 'index.html';
+	console.log("send file: "+homePage);
+	res.sendfile(homePage);
 });
 
 // var sp = new SerialPort(); // instantiate the serial port.
@@ -45,9 +47,22 @@ io.sockets.on('connection', function (socket) {
 	// this call back will be executed.
 	socket.on('message', function (msg) {
 		console.log("P="+msg[0]+"\tI="+msg[1]+"\tD="+msg[2]);
-		console.log(arduProto("PID", msg));
+		var sendData = arduProto("PID", msg);
+		console.log(sendData);
 		if(arduinoPort){
-			arduinoPort.write(arduProto("PID", msg), function (err, results) {
+			arduinoPort.write(sendData, function (err, results) {
+				console.log('err ' + err);
+				console.log('results ' + results);
+			});
+		}
+	});
+	socket.on('move', function (msg) {
+		console.log("X="+msg.x.toFixed()+"\tY="+msg.y.toFixed());
+		var moveArray = [msg.x.toFixed(),msg.y.toFixed()];
+		var sendData = arduProto("ST", moveArray);
+		console.log(sendData);
+		if(arduinoPort){
+			arduinoPort.write(sendData, function (err, results) {
 				console.log('err ' + err);
 				console.log('results ' + results);
 			});
@@ -111,6 +126,9 @@ if (!emulateSerialData) {
 						console.log('results ' + results);
 					});
 				});
+			}else{
+				console.log("---No Arduino Port discovered, using emulated serial data---");
+				emulateSerialData = true;
 			}
 		});
 	});

@@ -1,6 +1,8 @@
 <html>
 	<head>
+		<title>Remote</title>
 		<link type="text/css" href="/css/jquery-ui.css" rel="Stylesheet" />
+		<link type="text/css" href="/css/myview.css" rel="Stylesheet" />
 		
 		<script type="text/javascript" src="/js/socket.io.js"></script>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -10,6 +12,7 @@
 		<script type="text/javascript" src="/js/mycube.js"></script>
 		<script type="text/javascript" src="/js/displaydata.js"></script>
 		<script type="text/javascript" src="/js/pidtunner.js"></script>
+		<script type="text/javascript" src="/js/remotecontroller.js"></script>
 		
 		
 		<script>
@@ -18,10 +21,15 @@
 			mycube.kickoffcube();
 			displaydata.init();
 			pidtunner.init();
+			remotecontroller.init();
 			
 			$( "#accordion" ).accordion({
 			  collapsible: true,
 			});
+			$('#dragY').on("contollerValueEvent", function (event, para) {
+				console.log(para);
+				socket.emit('move', para);
+			})
 			pidtunner.updateButton().click(function () {
 				console.log("set value");
 				socket.emit('message', pidtunner.newPID());
@@ -84,6 +92,16 @@
 				</table>
 				<p>
 					<button id="setvalue">Set value</button>
+				</p>
+			</div>
+			<h3>Remote Controller</h3>
+			<div id = "remotecontroller">	
+				X: <span id="dragX"></span><br/>
+				Y: <span id="dragY"></span><br/>			
+				<p>
+					<div id="draggable" class="ui-widget-content">
+						<p>Drag</p>
+					</div>
 				</p>
 			</div>
 		</div>
