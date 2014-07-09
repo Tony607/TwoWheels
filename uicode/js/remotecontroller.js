@@ -19,7 +19,51 @@ var remotecontroller = (function () {
 					resetControllerValue();
 				},
 			});
+			$( "#upBtn" ).button({ icons: { primary: "ui-icon-gear"} });
+			$( "#leftBtn" ).button({ icons: { primary: "ui-icon-circle-triangle-w"} });
+			$( "#backBtn" ).button({ icons: { primary: " ui-icon-circle-triangle-s"} });
+			$( "#rightBtn" ).button({ icons: { primary: " ui-icon-circle-triangle-e"} });
+			
+			$( "#upBtn" ).mousedown(function() {
+				console.log(">>mousedown <up>");
+				fireContollerValueEvent(0,100);
+			});
+			$( "#upBtn" ).mouseup(function() {
+			  console.log(">>mouseup <up>");
+				fireContollerValueEvent(0,0);
+			});
+			$( "#downBtn" ).mousedown(function() {
+				console.log(">>mousedown <up>");
+				fireContollerValueEvent(0,-100);
+			});
+			$( "#downBtn" ).mouseup(function() {
+			  console.log(">>mouseup <up>");
+				fireContollerValueEvent(0,0);
+			});
+			$( "#leftBtn" ).mousedown(function() {
+				console.log(">>mousedown <up>");
+				fireContollerValueEvent(-15,0);
+			});
+			$( "#leftBtn" ).mouseup(function() {
+			  console.log(">>mouseup <up>");
+				fireContollerValueEvent(0,0);
+			});
+			$( "#rightBtn" ).mousedown(function() {
+				console.log(">>mousedown <up>");
+				fireContollerValueEvent(15,0);
+			});
+			$( "#rightBtn" ).mouseup(function() {
+			  console.log(">>mouseup <up>");
+				fireContollerValueEvent(0,0);
+			});
 		});
+	}
+	fireContollerValueEvent = function (x, y) {
+		contollerValue.x = x;
+		contollerValue.y = y;
+		$('#dragX').html(contollerValue.x);
+		$('#dragY').html(contollerValue.y);
+		$('#dragY').trigger( "contollerValueEvent", [contollerValue] );
 	}
 	updateInitialValue = function () {
 		initialValue.x = $theDragger.position().left;
