@@ -9,9 +9,9 @@ var pidtunner = (function () {
 			range : "min",
 			min : 0,
 			max : 100,
-			value : 80,
+			value : 40,
 			slide : function (event, ui) {
-				$("#amount1").val(ui.value);
+				$("#amount1").val((ui.value/100*0.5).toFixed(2));
 			}
 		});
 		$("#slider-vertical2").slider({
@@ -19,9 +19,9 @@ var pidtunner = (function () {
 			range : "min",
 			min : 0,
 			max : 100,
-			value : 60,
+			value : 40,
 			slide : function (event, ui) {
-				$("#amount2").val(ui.value);
+				$("#amount2").val((ui.value/100).toFixed(2));
 			}
 		});
 		$("#slider-vertical3").slider({
@@ -29,14 +29,14 @@ var pidtunner = (function () {
 			range : "min",
 			min : 0,
 			max : 100,
-			value : 20,
+			value : 65,
 			slide : function (event, ui) {
-				$("#amount3").val(ui.value);
+				$("#amount3").val((ui.value/100*40).toFixed(2));
 			}
 		});
-		$("#amount1").val($("#slider-vertical1").slider("value"));
-		$("#amount2").val($("#slider-vertical2").slider("value"));
-		$("#amount3").val($("#slider-vertical3").slider("value"));
+		$("#amount1").val(($("#slider-vertical1").slider("value")/100*0.5).toFixed(2));
+		$("#amount2").val(($("#slider-vertical2").slider("value")/100).toFixed(2));
+		$("#amount3").val(($("#slider-vertical3").slider("value")/100*40).toFixed(2));
 
 		updateButton = $("#setvalue")
 
@@ -45,7 +45,7 @@ var pidtunner = (function () {
 		return updateButton;
 	}
 	newPID = function () {
-		return [$("#amount1").val(), $("#amount2").val(), $("#amount3").val()]
+		return [$("#slider-vertical1").slider("value"), $("#slider-vertical2").slider("value"), $("#slider-vertical3").slider("value")]
 	}
 	return {
 		updateButton : getupdateButton,

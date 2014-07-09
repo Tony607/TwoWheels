@@ -35,7 +35,7 @@ var displaydata = (function () {
 	}
 	updatedisplay = function (valX, valY) {
 		// Put sensor value to the 'sensor_value' span
-		$('#sensor_value').html(valX);
+		$('#sensor_value').html(valX.toFixed(2));
 
 		// Push new value to Flot Plot
 		resX.push([totalPoints, valX]); // push on the end side
