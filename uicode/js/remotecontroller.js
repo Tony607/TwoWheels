@@ -21,12 +21,12 @@ var remotecontroller = (function () {
 			});
 			$( "#upBtn" ).button({ icons: { primary: "ui-icon-gear"} });
 			$( "#leftBtn" ).button({ icons: { primary: "ui-icon-circle-triangle-w"} });
-			$( "#backBtn" ).button({ icons: { primary: " ui-icon-circle-triangle-s"} });
+			$( "#downBtn" ).button({ icons: { primary: " ui-icon-circle-triangle-s"} });
 			$( "#rightBtn" ).button({ icons: { primary: " ui-icon-circle-triangle-e"} });
 			
 			$( "#upBtn" ).mousedown(function() {
 				console.log(">>mousedown <up>");
-				fireContollerValueEvent(0,100);
+				fireContollerValueEvent(0,200);
 			});
 			$( "#upBtn" ).mouseup(function() {
 			  console.log(">>mouseup <up>");
@@ -34,7 +34,7 @@ var remotecontroller = (function () {
 			});
 			$( "#downBtn" ).mousedown(function() {
 				console.log(">>mousedown <up>");
-				fireContollerValueEvent(0,-100);
+				fireContollerValueEvent(0,-200);
 			});
 			$( "#downBtn" ).mouseup(function() {
 			  console.log(">>mouseup <up>");
@@ -42,7 +42,7 @@ var remotecontroller = (function () {
 			});
 			$( "#leftBtn" ).mousedown(function() {
 				console.log(">>mousedown <up>");
-				fireContollerValueEvent(-15,0);
+				fireContollerValueEvent(25,0);
 			});
 			$( "#leftBtn" ).mouseup(function() {
 			  console.log(">>mouseup <up>");
@@ -50,7 +50,7 @@ var remotecontroller = (function () {
 			});
 			$( "#rightBtn" ).mousedown(function() {
 				console.log(">>mousedown <up>");
-				fireContollerValueEvent(15,0);
+				fireContollerValueEvent(-25,0);
 			});
 			$( "#rightBtn" ).mouseup(function() {
 			  console.log(">>mouseup <up>");
