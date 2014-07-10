@@ -70,7 +70,7 @@ var remotecontroller = (function () {
 		initialValue.y = $theDragger.position().top;
 	}
 	updateControllerValue = function () {
-		contollerValue.x = -$theDragger.position().left + initialValue.x;
+		contollerValue.x = ((-$theDragger.position().left + initialValue.x)/100).toFixed();
 		contollerValue.y = initialValue.y - $theDragger.position().top;
 		$('#dragX').html(contollerValue.x);
 		$('#dragY').html(contollerValue.y);
