@@ -44,9 +44,9 @@
 					if(parsedArray){						
 						var valX = (parseFloat(parsedArray[1]));
 						var valY = (parseFloat(parsedArray[2]));
+						mycube.setRotation(valX, valY);
+						displaydata.updatedisplay(valX, valY);
 					}
-					mycube.setRotation(valX, valY);
-					displaydata.updatedisplay(valX, valY);
 				});
 			});
 		});

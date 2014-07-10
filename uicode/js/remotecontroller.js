@@ -19,10 +19,10 @@ var remotecontroller = (function () {
 					resetControllerValue();
 				},
 			});
-			$( "#upBtn" ).button({ icons: { primary: "ui-icon-gear"} });
-			$( "#leftBtn" ).button({ icons: { primary: "ui-icon-circle-triangle-w"} });
-			$( "#downBtn" ).button({ icons: { primary: " ui-icon-circle-triangle-s"} });
-			$( "#rightBtn" ).button({ icons: { primary: " ui-icon-circle-triangle-e"} });
+			$( "#upBtn" ).button();
+			$( "#leftBtn" ).button();
+			$( "#downBtn" ).button();
+			$( "#rightBtn" ).button();
 			
 			$( "#upBtn" ).mousedown(function() {
 				console.log(">>mousedown <up>");
@@ -71,7 +71,7 @@ var remotecontroller = (function () {
 	}
 	updateControllerValue = function () {
 		contollerValue.x = $theDragger.position().left - initialValue.x;
-		contollerValue.y = initialValue.y - $theDragger.position().top;
+		contollerValue.y = -initialValue.y + $theDragger.position().top;
 		$('#dragX').html(contollerValue.x);
 		$('#dragY').html(contollerValue.y);
 		$('#dragY').trigger( "contollerValueEvent", [contollerValue] );
