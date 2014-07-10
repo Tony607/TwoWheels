@@ -72,7 +72,7 @@ var remotecontroller = (function () {
 	updateControllerValue = function () {
 		var diff_x = -$theDragger.position().left + initialValue.x;
 		if(diff_x<500){
-			diff_x = Math.round(diff_x/100);
+			diff_x = Math.round(diff_x/10);
 		}
 		contollerValue.x = diff_x;
 		contollerValue.y = initialValue.y - $theDragger.position().top;
