@@ -2,5 +2,9 @@
 /*/
 !/T3Test/
 !/sonarCaptureT3/
+<<<<<<< HEAD
 !/myStepperControl/
+=======
+!/uicode
+>>>>>>> 67f6070a2b2f1c183b03421b5d9dc29d05b0d5a1
 !/.gitignore
