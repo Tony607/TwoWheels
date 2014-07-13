@@ -1,20 +1,23 @@
 // var SerialPort  = require('serialport').SerialPort;
 // var portName = 'COM3';
+var emulateSerialData = false;
 var http = require('http');
 
 var express = require('express'), app = express();
 var io = require('socket.io');
 var server = http.createServer(app);
-
+var arduinoPort;
 io = io.listen(server); //this return the new object we want to listen to
 server.listen(8888);
 
 app.set('views', __dirname + '/');
-//serving files in ./js 
+//serving files in ./js
 app.use(express.static(__dirname + '/'));
 
-app.get('/', function(req, res){
-  res.sendfile('index.html');
+app.get('/', function (req, res) {
+	var homePage = process.argv[2]? process.argv[2]: 'index.html';
+	console.log("send file: "+homePage);
+	res.sendfile(homePage);
 });
 
 // var sp = new SerialPort(); // instantiate the serial port.
@@ -25,12 +28,45 @@ parity: 'none', // this is the default for Arduino serial communication
 stopBits: 1, // this is the default for Arduino serial communication
 flowControl: false // this is the default for Arduino serial communication
 });*/
-
+function arduProto(functionCode, setvalue){
+	if(functionCode.length===1){//one function code
+		return String(functionCode+setvalue+"#");
+	}else if (functionCode.length > 1){
+		var funLength = functionCode.length;
+		var result = "@";//start sign
+		for(var i = 0;i< funLength;i++){
+			result += functionCode[i]+setvalue[i]+"#"
+		}
+		result += "$";//end sign
+		return result;
+	}
+	
+}
 io.sockets.on('connection', function (socket) {
 	// If socket.io receives message from the client browser then
 	// this call back will be executed.
 	socket.on('message', function (msg) {
-		console.log(msg);
+		console.log("P="+msg[0]+"\tI="+msg[1]+"\tD="+msg[2]);
+		var sendData = arduProto("PID", msg);
+		console.log(sendData);
+		if(arduinoPort){
+			arduinoPort.write(sendData, function (err, results) {
+				console.log('err ' + err);
+				console.log('results ' + results);
+			});
+		}
+	});
+	socket.on('move', function (msg) {
+		console.log("X="+msg.x.toFixed()+"\tY="+msg.y.toFixed());
+		var moveArray = [msg.x.toFixed(),msg.y.toFixed()];
+		var sendData = arduProto("ST", moveArray);
+		console.log(sendData);
+		if(arduinoPort){
+			arduinoPort.write(sendData, function (err, results) {
+				console.log('err ' + err);
+				console.log('results ' + results);
+			});
+		}
 	});
 	// If a web browser disconnects from Socket.IO then this callback is called.
 	socket.on('disconnect', function () {
@@ -56,35 +92,44 @@ setInterval(function () {
 	} else {
 		angle = 0;
 	}
-	//io.sockets.emit('message', (Math.random() * 0.0 + (Math.sin(angle) + 1) * 10).toString()+":"+(Math.random() * 0.0 + (Math.cos(angle+1.0) + 1) * 10).toString());
+	if (emulateSerialData) {
+		io.sockets.emit('message', (Math.random() * 0.0 + (Math.sin(angle) + 1) * 10).toString() + ":" + (Math.random() * 0.0 + (Math.cos(angle + 1.0) + 1) * 10).toString());
+	}
 }, 20);
 
 
-var serialPort = require("serialport");
-serialPort.list(function (err, ports) {
-  ports.forEach(function(port) {
-    console.log(port.comName);
-    console.log(port.pnpId);
-    console.log(port.manufacturer);
-	if(port.pnpId.indexOf("Arduino")>0){
-	var serialport = require("serialport");
-	var SerialPort = serialport.SerialPort; // localize object constructor
-	var arduinoPort = new SerialPort(port.comName, {
-	  baudrate: 115200,
-	  parser: serialPort.parsers.readline("#")
+if (!emulateSerialData) {
+	var serialPort = require("serialport");	
+	console.log("---available serial ports---");
+	serialPort.list(function (err, ports) {
+		ports.forEach(function (port) {
+			console.log(port.comName);
+			console.log("pnpId:\t"+port.pnpId);
+			console.log("manufacturer:\t"+port.manufacturer);
+			if ((port.pnpId+port.manufacturer).indexOf("Arduino") >= 0) {
+				console.log("---Arduino port found---");
+				var serialport = require("serialport");
+				var SerialPort = serialport.SerialPort; // localize object constructor
+				arduinoPort = new SerialPort(port.comName, {
+						baudrate : 115200,
+						parser : serialPort.parsers.readline("#")
+					});
+				arduinoPort.on("open", function () {
+					console.log('open');
+					arduinoPort.on('data', function (data) {
+						console.log(data.toString());
+						io.sockets.emit('message', data.toString());
+						console.log("X");
+					});
+					arduinoPort.write("ls\n", function (err, results) {
+						console.log('err ' + err);
+						console.log('results ' + results);
+					});
+				});
+			}else{
+				console.log("---No Arduino Port discovered, using emulated serial data---");
+				emulateSerialData = true;
+			}
+		});
 	});
-	arduinoPort.on("open", function () {
-	  console.log('open');
-	  arduinoPort.on('data', function(data) {
-		console.log(data.toString());
-		io.sockets.emit('message', data.toString());
-		console.log("X");
-	  });
-	  arduinoPort.write("ls\n", function(err, results) {
-		console.log('err ' + err);
-		console.log('results ' + results);
-	  });
-	});	
-	}
-  });
-});
+}
