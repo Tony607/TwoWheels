@@ -1,6 +1,6 @@
 // var SerialPort  = require('serialport').SerialPort;
 // var portName = 'COM3';
-var emulateSerialData = true;
+var emulateSerialData = false;
 var http = require('http');
 
 var express = require('express'), app = express();
@@ -207,7 +207,7 @@ if (!emulateSerialData) {
 							var msg_q=new Quaternion(parseFloat(parsedArray[2]),parseFloat(parsedArray[3]),parseFloat(parsedArray[4]),parseFloat(parsedArray[1]));
 						}
 						io.sockets.emit('message', msg_q);
-						console.log("X");
+						console.log("x:",msg_q.x,"y:",msg_q.y,"z:",msg_q.z,"w:",msg_q.w);
 					});
 					arduinoPort.write("ls\n", function (err, results) {
 						console.log('err ' + err);
