@@ -6,8 +6,7 @@ var TheCube = function () {
 	this.scene,
 	this.renderer;
 	this.geometry;
-	var x = 0;
-	var y = 0;
+	var q = new THREE.Quaternion();
 
 	var material;
 	var cube;
@@ -19,7 +18,11 @@ var TheCube = function () {
 		this.renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
 
 		this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-		this.camera.position.z = 5;
+		//this.camera.position.z = 5;
+		this.camera.position.set(0,-2,2);
+		var lookatdirection = new THREE.Vector3( 0, -1, 1);		
+		this.camera.lookAt(lookatdirection);
+
 	}
 
 	function fillScene() {
@@ -32,10 +35,10 @@ var TheCube = function () {
 		this.scene.add(headlight);
 
 		var light = new THREE.SpotLight(0xFFFFFF, 1.0);
-		light.position.set(-600, 1200, 300);
+		light.position.set(-600, -600, 300);
 		light.angle = 20 * Math.PI / 180;
 		light.exponent = 1;
-		light.target.position.set(0, 200, 0);
+		light.target.position.set(0, 0, 0);
 		light.castShadow = true;
 
 		this.scene.add(light);
@@ -71,9 +74,9 @@ var TheCube = function () {
 	}
 	var render = function () {
 		requestAnimationFrame(render);
-
-		cube.rotation.x = Math.radians(x);
-		cube.rotation.z = Math.radians(y)
+		cube.setRotationFromQuaternion(q);
+		// cube.rotation.x = Math.radians(x);
+		// cube.rotation.z = -Math.radians(y)
 
 			this.renderer.render(this.scene, this.camera);
 	};
@@ -92,9 +95,8 @@ var TheCube = function () {
 		addToDOM();
 		render();
 	}
-	this.setRotation = function(rx,ry) {
-		x = rx;
-		y = ry;
+	this.setRotation = function(qq) {
+		q.set(qq._y,-qq._x,qq._z,qq._w);
 	}
 
 	// setInterval(function () {
