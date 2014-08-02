@@ -1,6 +1,6 @@
 // var SerialPort  = require('serialport').SerialPort;
 // var portName = 'COM3';
-var emulateSerialData = true;
+var emulateSerialData = false;
 var http = require('http');
 
 var express = require('express'), app = express();
