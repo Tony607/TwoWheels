@@ -92,7 +92,7 @@ var TheCube = function () {
 		render();
 	}
 	this.setRotation = function(qq) {
-		q.set(qq._x,qq._y,qq._z,qq._w);
+		q.set(qq.x,qq.y,qq.z,qq.w);
 	}
 
 	// setInterval(function () {

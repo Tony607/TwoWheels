@@ -42,7 +42,7 @@
 					if(msg){				
 						mycube.setRotation(msg);
 						var eu = new THREE.Euler();
-						eu.setFromQuaternion(new THREE.Quaternion(msg._x,msg._y,msg._z,msg._w));
+						eu.setFromQuaternion(new THREE.Quaternion(msg.x,msg.y,msg.z,msg.w));
 						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
 					}
 				});
