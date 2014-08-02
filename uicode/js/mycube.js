@@ -6,8 +6,9 @@ var TheCube = function () {
 	this.scene,
 	this.renderer;
 	this.geometry;
+	var qFromMPU = new THREE.Quaternion();
 	var q = new THREE.Quaternion();
-
+	var qCalibrate = new THREE.Quaternion();
 	var material;
 	var cube;
 	var angle = 0;
@@ -95,8 +96,16 @@ var TheCube = function () {
 		addToDOM();
 		render();
 	}
+	this.setCalibration = function() {
+		//we invert the Quaternion from MPU current reading and set it to the calibration Quaternion
+		qCalibrate.copy(qFromMPU).inverse();
+		console.log("Calibrate Quaternion:",qCalibrate);
+	}
 	this.setRotation = function(qq) {
-		q.set(qq._x,qq._y,qq._z,qq._w);
+		//read the Quaternion from MPU
+		qFromMPU.set(qq._x,qq._y,qq._z,qq._w);
+		//apply the calibration Quaternion
+		q.multiplyQuaternions(qCalibrate,qFromMPU);
 	}
 
 	// setInterval(function () {

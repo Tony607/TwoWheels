@@ -4,6 +4,7 @@ var displaydata = (function () {
 	var resX = [];
 	var resY = [];
 	var plot;
+	var calibrateButton;
 	getInitData = function () {
 		// zip the generated y values with the x values
 		for (var i = 0; i < totalPoints; ++i) {
@@ -33,6 +34,7 @@ var displaydata = (function () {
 			value : 0,
 			 max: 360
 		});
+		calibrateButton = $("#docalibrate")
 	}
 	updatedisplay = function (valX, valY) {
 		// Put sensor value to the 'sensor_value' span
@@ -58,8 +60,12 @@ var displaydata = (function () {
 		});
 
 	}
+	getcalibrateButton = function () {
+		return calibrateButton;
+	}
 	return {
 		init : init,
-		updatedisplay : updatedisplay
+		updatedisplay : updatedisplay,
+		calibrateButton : getcalibrateButton
 	}
 })();

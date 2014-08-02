@@ -31,6 +31,10 @@
 				console.log(para);
 				socket.emit('move', para);
 			})
+			displaydata.calibrateButton().click(function () {
+				console.log("set calibrate value for Quaternion");
+				mycube.setCalibration();
+			});
 			pidtunner.updateButton().click(function () {
 				console.log("set value");
 				socket.emit('message', pidtunner.newPID());
@@ -59,6 +63,9 @@
 				Graph:<br/>
 				<div id="placeholder" style="width:1000px;height:300px;"></div><br/>
 				<div id="container" style="height: 492px, width: 876px"></div>
+				<p>
+					<button id="docalibrate">Calibrate Orientation</button>
+				</p>
 			</div>
 			<h3>PID tunner</h3>
 			<div id = "pidtunner">
