@@ -201,14 +201,12 @@ if (!emulateSerialData) {
 					console.log('open');
 					arduinoPort.on('data', function (data) {
 						console.log(data.toString());
-						var str_parser = /^(-?\d+\.?\d*?):(-?\d+\.?\d*?)$/;
-						var parsedArray = str_parser.exec(data.toString())
-						var msg = {x : 0, y : 0};
-						if(parsedArray){						
-							msg.x = (parseFloat(parsedArray[1]));
-							msg.y = (parseFloat(parsedArray[2]));
+						var str_parser = /^(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?)$/;
+						var parsedArray = str_parser.exec(data.toString());
+						if(parsedArray){
+							var msg_q=new Quaternion(parseFloat(parsedArray[2]),parseFloat(parsedArray[3]),parseFloat(parsedArray[4]),parseFloat(parsedArray[1]));
 						}
-						io.sockets.emit('message', msg);
+						io.sockets.emit('message', msg_q);
 						console.log("X");
 					});
 					arduinoPort.write("ls\n", function (err, results) {

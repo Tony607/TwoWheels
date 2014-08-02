@@ -6,8 +6,7 @@ var TheCube = function () {
 	this.scene,
 	this.renderer;
 	this.geometry;
-	var x = 0;
-	var y = 0;
+	var q = new THREE.Quaternion();
 
 	var material;
 	var cube;
@@ -71,9 +70,9 @@ var TheCube = function () {
 	}
 	var render = function () {
 		requestAnimationFrame(render);
-
-		cube.rotation.x = Math.radians(x);
-		cube.rotation.z = -Math.radians(y)
+		cube.setRotationFromQuaternion(q);
+		// cube.rotation.x = Math.radians(x);
+		// cube.rotation.z = -Math.radians(y)
 
 			this.renderer.render(this.scene, this.camera);
 	};
@@ -92,9 +91,8 @@ var TheCube = function () {
 		addToDOM();
 		render();
 	}
-	this.setRotation = function(rx,ry) {
-		x = rx;
-		y = ry;
+	this.setRotation = function(qq) {
+		q.set(qq._x,qq._y,qq._z,qq._w);
 	}
 
 	// setInterval(function () {

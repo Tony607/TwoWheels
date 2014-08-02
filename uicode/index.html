@@ -9,7 +9,7 @@
 		<script type="text/javascript" src="/js/jquery-ui-1.10.4.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.flot.js"></script>
-		<script src="http://threejs.org/build/three.min.js"></script>
+		<script src="/js/three.min.js"></script>
 		<script type="text/javascript" src="/js/mycube.js"></script>
 		<script type="text/javascript" src="/js/displaydata.js"></script>
 		<script type="text/javascript" src="/js/pidtunner.js"></script>
@@ -39,13 +39,11 @@
 			socket.on('connect', function () {
 				socket.on('message', function (msg) {
 					// Convert value to integer
-					var str_parser = /^(-?\d+\.?\d*?):(-?\d+\.?\d*?)$/;
-					var parsedArray = str_parser.exec(msg)
-					if(parsedArray){						
-						var valX = (parseFloat(parsedArray[1]));
-						var valY = (parseFloat(parsedArray[2]));
-						mycube.setRotation(valX, valY);
-						displaydata.updatedisplay(valX, valY);
+					if(msg){				
+						mycube.setRotation(msg);
+						var eu = new THREE.Euler();
+						eu.setFromQuaternion(new THREE.Quaternion(msg._x,msg._y,msg._z,msg._w));
+						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
 					}
 				});
 			});

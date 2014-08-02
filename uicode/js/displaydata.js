@@ -30,12 +30,13 @@ var displaydata = (function () {
 	init = function () {
 		plot = $.plot($("#placeholder"), getInitData(), options);
 		$("#progressbar").progressbar({
-			value : 0
+			value : 0,
+			 max: 360
 		});
 	}
 	updatedisplay = function (valX, valY) {
 		// Put sensor value to the 'sensor_value' span
-		$('#sensor_value').html(valX.toFixed(2));
+		$('#sensor_value').html(parseFloat(valX).toFixed(2));
 
 		// Push new value to Flot Plot
 		resX.push([totalPoints, valX]); // push on the end side
@@ -53,7 +54,7 @@ var displaydata = (function () {
 
 		// Update JQuery UI progress bar.
 		$("#progressbar").progressbar({
-			value : valX
+			value : valX+180
 		});
 
 	}
