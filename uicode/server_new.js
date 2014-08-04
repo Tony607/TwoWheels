@@ -181,8 +181,15 @@ setInterval(function () {
 }, 20);
 
 
+var serialPort;
+try {
+	serialPort = require("serialport");	
+}
+catch (exception) {
+	console.error("Can not use serialport module, possibly using Windows. Fall back to emulating SerialData");
+	emulateSerialData = true;
+}
 if (!emulateSerialData) {
-	var serialPort = require("serialport");	
 	console.log("---available serial ports---");
 	serialPort.list(function (err, ports) {
 		ports.forEach(function (port) {
