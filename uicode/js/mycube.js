@@ -11,6 +11,7 @@ var TheCube = function () {
 	var qCalibrate = new THREE.Quaternion();
 	var material;
 	var cube;
+	var object;
 	var angle = 0;
 	function init() {
 		var canvasWidth = 846;
@@ -66,7 +67,10 @@ var TheCube = function () {
 		cube.position.x = 0;
 		cube.position.y = 0;
 		cube.position.z = 0;
-		this.scene.add(cube);
+		//this.scene.add(cube);
+		object = new THREE.Object3D();
+		scene.add(object);
+		object.add(cube);
 	}
 
 	function animate() {

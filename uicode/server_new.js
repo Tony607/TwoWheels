@@ -95,7 +95,8 @@ Vector3 = function ( x, y, z ) {
 	this.z = z || 0;
 
 };
-var vect = new Vector3( Math.sqrt(1/3), Math.sqrt(1/3), Math.sqrt(1/3) );
+
+var vect = new Vector3( Math.sqrt(1/2), 0, Math.sqrt(1/2) );
 Quaternion = function ( x, y, z, w ) {
 
 	this._x = x || 0;
