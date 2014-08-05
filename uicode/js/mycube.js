@@ -9,6 +9,8 @@ var TheCube = function () {
 	var qFromMPU = new THREE.Quaternion();
 	var q = new THREE.Quaternion();
 	var qCalibrate = new THREE.Quaternion();
+	var mCalibrate = new THREE.Matrix4();
+	var mRotation = new THREE.Matrix4();
 	var material;
 	var cube;
 	var object;
@@ -102,16 +104,28 @@ var TheCube = function () {
 	}
 	this.setCalibration = function() {
 		//we invert the Quaternion from MPU current reading and set it to the calibration Quaternion
-		qCalibrate.copy(qFromMPU).inverse();
-		console.log("Calibrate Quaternion:",qCalibrate);
+		//qCalibrate.copy(qFromMPU).inverse();
+		//console.log("Calibrate Quaternion:",qCalibrate);
+		mCalibrate.getInverse(this.QtoM(qFromMPU));
+		console.log("Calibrate Matrix:",mCalibrate.elements);
 	}
 	this.setRotation = function(qq) {
 		//read the Quaternion from MPU
 		qFromMPU.set(qq._x,qq._y,qq._z,qq._w);
 		//apply the calibration Quaternion
-		q.multiplyQuaternions(qCalibrate,qFromMPU);
+		//q.multiplyQuaternions(qCalibrate,qFromMPU);
+// 		cube.(mselfInverse);
+ 		mRotation.multiplyMatrices(this.QtoM(qFromMPU), mCalibrate);
+		q.setFromRotationMatrix(mRotation);
+// 		cube.applyMatrix( mRotation ); // CHANGED
 	}
-
+	this.QtoM = function(q){
+	    var m = new THREE.Matrix4(	1.0 - 2.0*q.y*q.y - 2.0*q.z*q.z, 	2.0*q.x*q.y - 2.0*q.z*q.w, 		2.0*q.x*q.z + 2.0*q.y*q.w, 		0.0,
+					2.0*q.x*q.y + 2.0*q.z*q.w, 		1.0 - 2.0*q.x*q.x - 2.0*q.z*q.z, 	2.0*q.y*q.z - 2.0*q.x*q.w, 		0.0,
+					2.0*q.x*q.z - 2.0*q.y*q.w, 		2.0*q.y*q.z + 2.0*q.x*q.w, 		1.0 - 2.0*q.x*q.x - 2.0*q.y*q.y, 	0.0,
+					0.0, 					0.0, 					0.0, 					1.0);
+	    return m;
+	}
 	// setInterval(function () {
 	// if (angle < Math.PI * 2.0) {
 	// angle += Math.PI / 1800.0;
