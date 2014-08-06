@@ -1,0 +1,76 @@
+<html>
+	<head>
+		<title>Model</title>
+		<link type="text/css" href="/css/jquery-ui.css" rel="Stylesheet" />
+		<link type="text/css" href="/css/myview.css" rel="Stylesheet" />
+		
+		<script type="text/javascript" src="/js/socket.io.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/js/jquery-ui-1.10.4.min.js"></script>
+		<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+		<script type="text/javascript" src="/js/jquery.flot.js"></script>
+		<script src="js/Three.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="js/dat.gui.min.js"></script>
+		<script src="js/Coordinates.js"></script>
+		<script src="js/Stats.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/THREEx.KeyboardState.js"></script>
+		<script src="js/THREEx.FullScreen.js"></script>
+		<script src="js/THREEx.WindowResize.js"></script>
+		<script type="text/javascript" src="/js/mycube.js"></script>
+		<script type="text/javascript" src="/js/displaydata.js"></script>
+		<script type="text/javascript" src="/js/pidtunner.js"></script>
+		<script type="text/javascript" src="/js/remotecontroller.js"></script>
+		
+		
+		<script>
+		$(document).ready(function(){
+			//var mycube = new TheCube();
+			//mycube.kickoffcube();
+			displaydata.init();
+			
+			$( "#accordion" ).accordion({
+			  collapsible: true,
+			});
+			$('#dragY').on("contollerValueEvent", function (event, para) {
+				console.log(para);
+				socket.emit('move', para);
+			})
+			displaydata.calibrateButton().click(function () {
+				console.log("set calibrate value for Quaternion");
+				//mycube.setCalibration();
+			});
+			var socket = io.connect();
+			socket.on('connect', function () {
+				socket.on('message', function (msg) {
+					// Convert value to integer
+					if(msg){				
+						//mycube.setRotation(msg);
+						var eu = new THREE.Euler();
+						eu.setFromQuaternion(new THREE.Quaternion(msg._x,msg._y,msg.z,msg._w));
+						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
+					}
+				});
+			});
+		});
+		</script>
+	</head>
+	<body>
+		<div id="accordion">
+			<h3>Arm Animation</h3>
+			<div id = "displaydata" role="main">							
+				Graph:<br/>
+				<div id="placeholder" style="width:300px;height:100px;"></div><br/>
+				<div id="container" style="height: 492px, width: 876px"></div>
+				<p>
+					<button id="docalibrate">Calibrate Orientation</button>
+				</p>
+			</div>
+			</div>
+		</div>
+			
+			
+		<script src="js/testModel.js"></script>
+	</body>
+</html>

@@ -1,0 +1,144 @@
+<html>
+	<head>
+		<title>Remote</title>
+		<link type="text/css" href="/css/jquery-ui.css" rel="Stylesheet" />
+		<link type="text/css" href="/css/myview.css" rel="Stylesheet" />
+		
+		<script type="text/javascript" src="/js/socket.io.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="/js/jquery-ui-1.10.4.min.js"></script>
+		<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+		<script type="text/javascript" src="/js/jquery.flot.js"></script>
+		<script src="/js/three.min.js"></script>
+		<script type="text/javascript" src="/js/mycube.js"></script>
+		<script type="text/javascript" src="/js/displaydata.js"></script>
+		<script type="text/javascript" src="/js/pidtunner.js"></script>
+		<script type="text/javascript" src="/js/remotecontroller.js"></script>
+		
+		
+		<script>
+		$(document).ready(function(){
+			var mycube = new TheCube();
+			mycube.kickoffcube();
+			displaydata.init();
+			pidtunner.init();
+			remotecontroller.init();
+			
+			$( "#accordion" ).accordion({
+			  collapsible: true,
+			});
+			$('#dragY').on("contollerValueEvent", function (event, para) {
+				console.log(para);
+				socket.emit('move', para);
+			})
+			pidtunner.updateButton().click(function () {
+				console.log("set value");
+				socket.emit('message', pidtunner.newPID());
+			});
+			var socket = io.connect();
+			socket.on('connect', function () {
+				socket.on('message', function (msg) {
+					// Convert value to integer
+					if(msg){				
+						mycube.setRotation(msg);
+						var eu = new THREE.Euler();
+						eu.setFromQuaternion(new THREE.Quaternion(msg.x,msg.y,msg.z,msg.w));
+						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
+					}
+				});
+			});
+		});
+		</script>
+	</head>
+	<body>
+		<div id="accordion">
+			<h3>Data Display</h3>
+			<div id = "displaydata" role="main">
+				X Value: <span id="sensor_value"></span><br/>
+				<div id="progressbar" style="width:1000px;height:25px;"></div><br/>
+				Graph:<br/>
+				<div id="placeholder" style="width:1000px;height:300px;"></div><br/>
+				<div id="container" style="height: 492px, width: 876px"></div>
+			</div>
+			<h3>PID tunner</h3>
+			<div id = "pidtunner">
+				<table style="width:100px">
+					<tr>
+						<td>
+							<label for="amount1">P:</label>
+							<input type="text" id="amount1" readonly style="border:0; color:#f6931f; font-weight:bold;">
+						</td>
+						<td>
+							<label for="amount2">I:</label>
+							<input type="text" id="amount2" readonly style="border:0; color:#f6931f; font-weight:bold;">
+						</td>	
+						<td>
+							<label for="amount3">D:</label>
+							<input type="text" id="amount3" readonly style="border:0; color:#f6931f; font-weight:bold;">
+						</td>		
+					</tr>
+					<tr>
+					  <td>
+							<div id="slider-vertical1" style="height:200px;"></div>
+					  </td>
+					  <td>
+							<div id="slider-vertical2" style="height:200px;"></div>
+					  </td>
+					  <td>
+							<div id="slider-vertical3" style="height:200px;"></div>
+					  </td>
+					</tr>
+				</table>
+				<p>
+					<button id="setvalue">Set value</button>
+				</p>
+			</div>
+			<h3>Remote Controller</h3>
+			<div id = "remotecontroller">	
+				X: <span id="dragX"></span><br/>
+				Y: <span id="dragY"></span><br/>			
+				<p>
+					<div>
+						<table>
+							<tr>
+								<td>
+									
+								</td>
+								<td>
+									<button class = "wasd" id="upBtn"></button>
+								</td>	
+								<td>
+									
+								</td>		
+							</tr>
+							<tr>
+							  <td>
+								<button class = "wasd" id="leftBtn"></button>
+							  </td>
+							  <td>
+							  </td>
+							  <td>
+								<button class = "wasd" id="rightBtn"></button>
+							  </td>
+							</tr>
+							<tr>
+							  <td>
+							  </td>
+							  <td>
+								<button class = "wasd" id="downBtn"></button>
+							  </td>
+							  <td>
+							  </td>
+							</tr>
+						</table>
+					</div>
+					<div id="draggable" class="ui-widget-content">
+						<p>Drag</p>
+					</div>
+				</p>
+			</div>
+		</div>
+			
+			
+	</body>
+</html>
