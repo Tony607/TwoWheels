@@ -18,17 +18,15 @@
 		<script src="js/THREEx.KeyboardState.js"></script>
 		<script src="js/THREEx.FullScreen.js"></script>
 		<script src="js/THREEx.WindowResize.js"></script>
-		<script type="text/javascript" src="/js/mycube.js"></script>
+		<script src="js/testModel.js"></script>
 		<script type="text/javascript" src="/js/displaydata.js"></script>
-		<script type="text/javascript" src="/js/pidtunner.js"></script>
-		<script type="text/javascript" src="/js/remotecontroller.js"></script>
 		
 		
 		<script>
 		$(document).ready(function(){
-			//var mycube = new TheCube();
 			//mycube.kickoffcube();
 			displaydata.init();
+			var testModel = new TestModel();
 			
 			$( "#accordion" ).accordion({
 			  collapsible: true,
@@ -46,7 +44,7 @@
 				socket.on('message', function (msg) {
 					// Convert value to integer
 					if(msg){				
-						//mycube.setRotation(msg);
+						testModel.setForeArmGlobalRotationFromQuternion(msg);
 						var eu = new THREE.Euler();
 						eu.setFromQuaternion(new THREE.Quaternion(msg._x,msg._y,msg.z,msg._w));
 						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
@@ -71,6 +69,5 @@
 		</div>
 			
 			
-		<script src="js/testModel.js"></script>
 	</body>
 </html>
