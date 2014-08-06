@@ -37,7 +37,7 @@
 			})
 			displaydata.calibrateButton().click(function () {
 				console.log("set calibrate value for Quaternion");
-				//mycube.setCalibration();
+				testModel.setCalibration();
 			});
 			var socket = io.connect();
 			socket.on('connect', function () {

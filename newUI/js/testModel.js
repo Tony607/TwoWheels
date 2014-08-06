@@ -18,6 +18,7 @@ var TestModel = function (domElementID) {
 	var arm,
 	forearm;	
 	var qFromMPU = new THREE.Quaternion();
+	var mCalibrate = new THREE.Matrix4();
 	var mForearmGFixedRot = new THREE.Matrix4();
 	var cnt = -90;
 	fillScene = function () {
@@ -284,11 +285,16 @@ var TestModel = function (domElementID) {
 			}
 		});
 	}
+	this.setCalibration = function() {
+		mCalibrate.getInverse(QtoM(qFromMPU));
+		console.log("Calibrate Matrix:",mCalibrate.elements);
+	}
 	this.setForeArmGlobalRotationFromQuternion = function ( qq ) {
 		//read the Quaternion from MPU
 		qFromMPU.set(qq._x,qq._y,qq._z,qq._w);
 		//mForearmGFixedRot
-		mForearmGFixedRot = QtoM(qFromMPU)
+		//mForearmGFixedRot = QtoM(qFromMPU);
+		mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
 	};
 	QtoM = function(q){
 	    var m = new THREE.Matrix4(	1.0 - 2.0*q.y*q.y - 2.0*q.z*q.z, 	2.0*q.x*q.y - 2.0*q.z*q.w, 		2.0*q.x*q.z + 2.0*q.y*q.w, 		0.0,
