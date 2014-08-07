@@ -14,7 +14,7 @@ var TestModel = function (domElementID) {
 	var gridY = false;
 	var gridZ = false;
 	var axes = true;
-	var ground = true;
+	var ground = false;
 	var arm,
 	forearm;	
 	var qFromMPU = new THREE.Quaternion();
@@ -193,66 +193,59 @@ var TestModel = function (domElementID) {
 
 			fillScene();
 		}
-		//matrix to store self local inverse matrix
-		var mselfInverse = new THREE.Matrix4();
-		//matrix to be applied on given Oject3D
-		var matrixToApply = new THREE.Matrix4();
-		/*Rotate Arm*/
-		
-		mArmGFixedRot.extractRotation(mArmGFixedRot);
-		mselfInverse.getInverse(arm.matrix);
-		mselfInverse.extractRotation(mselfInverse);
-		//mArmGFixedRot
-		//arm.applyMatrix(mselfInverse);
-		
-		matrixToApply.multiplyMatrices(mArmGFixedRot, mselfInverse);
-		matrixToApply.extractRotation(matrixToApply)
-		arm.applyMatrix(matrixToApply);
-		//arm.matrixWorld = mArmGFixedRot;
-		arm.updateMatrix();
-		/*Rotate Forearm*/
-		/*
-		1. get the self local inverse, extract rotation
-		2. calculate self local rotation given global rotation
-			2.1 forearmG = armL x forearmL => inverse(armL) x forearmG = forearmL
-		3. get the matrix that will apply to the forearm
-			3.1 forearmLocalRot x mselfInverse
-		4. apply this matrix to forearm
-		*/
-		//get the self local rotation matrix and extract only the rotation part
-		mselfInverse.getInverse(forearm.matrix);
-		mselfInverse.extractRotation(mselfInverse);
-		//rotate forearm back to local origin
-		//forearm.applyMatrix(mselfInverse);
-		//apply the local rotation to forearm
-		var forearmLocalRot = new THREE.Matrix4();
-		//forearmLocalRot <= arm local inverse rotation matrix
-		forearmLocalRot.getInverse(forearmLocalRot.extractRotation(arm.matrix));
-		//forearmLocalRot <= forearm local rotation matrix when set to 
-		//a fixed global rotation matrix
-		forearmLocalRot.multiplyMatrices(forearmLocalRot, mForearmGFixedRot);
-		//extract only the rotation part of forearm local rotation matrix
-		forearmLocalRot.extractRotation(forearmLocalRot);
-		//apply self local inverse matrix to forearm, forearm local rotation set to 0
-		//then apply the forearmLocalRot matrix to get to the correct local forearm rotation
-		matrixToApply.multiplyMatrices(forearmLocalRot, mselfInverse);
-		matrixToApply.extractRotation(matrixToApply)
-		forearm.applyMatrix(matrixToApply);
-		//set the local Y position of forearm back to 120
-		forearm.position.setY(120);
-		// forearm.rotation.x = effectController.fx * Math.PI/180;	// pitch
-		// forearm.rotation.y = effectController.fy * Math.PI/180;	// yaw
-		// forearm.rotation.z = effectController.fz * Math.PI/180;	// roll
-		arm.scale.x = 1;
-		arm.scale.y = 1;
-		arm.scale.z = 1;
-		forearm.scale.x = 1;
-		forearm.scale.y = 1;
-		forearm.scale.z = 1;
+		targetObjRotation(arm,mArmGFixedRot);
+		targetObjRotation(forearm,mForearmGFixedRot);
 
 		renderer.render(scene, camera);
 	}
-
+	/*
+		targetObj: the object to be rotated, type:Object3D
+		mGFixedRot: the calibrated global rotation matrix, type:Matrix4
+	*/
+	targetObjRotation = function (targetObj,mGFixedRot) {
+		//save position for restore 
+		var savePositionX = targetObj.position.x;
+		var savePositionY = targetObj.position.y;
+		var savePositionZ = targetObj.position.z;
+		
+		var mselfInverse = new THREE.Matrix4();
+		//matrix to be applied on given Oject3D
+		var matrixToApply = new THREE.Matrix4();
+		/*Rotate targetObj*/
+		/*
+		1. get the self local inverse, extract rotation
+		2. calculate self local rotation given global rotation
+			2.1 targetObjG = parentObjL x targetObjL => inverse(parentObjL) x targetObjG = targetObjL
+		3. get the matrix that will apply to the targetObj
+			3.1 targetObjLocalRot x mselfInverse
+		4. apply this matrix to targetObj
+		*/
+		//get the self local rotation matrix and extract only the rotation part
+		mselfInverse.getInverse(targetObj.matrix);
+		mselfInverse.extractRotation(mselfInverse);
+		//rotate targetObj back to local origin
+		//targetObj.applyMatrix(mselfInverse);
+		//apply the local rotation to targetObj
+		var targetObjLocalRot = new THREE.Matrix4();
+		//targetObjLocalRot <= parentObj local inverse rotation matrix
+		targetObjLocalRot.getInverse(targetObjLocalRot.extractRotation(targetObj.parent.matrix));
+		//targetObjLocalRot <= targetObj local rotation matrix when set to 
+		//a fixed global rotation matrix
+		targetObjLocalRot.multiplyMatrices(targetObjLocalRot, mGFixedRot);
+		//extract only the rotation part of targetObj local rotation matrix
+		targetObjLocalRot.extractRotation(targetObjLocalRot);
+		//apply self local inverse matrix to targetObj, targetObj local rotation set to 0
+		//then apply the targetObjLocalRot matrix to get to the correct local targetObj rotation
+		matrixToApply.multiplyMatrices(targetObjLocalRot, mselfInverse);
+		matrixToApply.extractRotation(matrixToApply)
+		targetObj.applyMatrix(matrixToApply);
+		//set the local Y position of targetObj back to saved position
+		targetObj.position.set(savePositionX,savePositionY,savePositionZ);
+		targetObj.scale.x = 1;
+		targetObj.scale.y = 1;
+		targetObj.scale.z = 1;
+		
+	}
 	QtoM = function (q) {
 		var m = new THREE.Matrix4(1.0 - 2.0 * q.y * q.y - 2.0 * q.z * q.z, 2.0 * q.x * q.y - 2.0 * q.z * q.w, 2.0 * q.x * q.z + 2.0 * q.y * q.w, 0.0,
 				2.0 * q.x * q.y + 2.0 * q.z * q.w, 1.0 - 2.0 * q.x * q.x - 2.0 * q.z * q.z, 2.0 * q.y * q.z - 2.0 * q.x * q.w, 0.0,
@@ -297,7 +290,7 @@ var TestModel = function (domElementID) {
 	}
 
 	takeScreenshot = function () {
-		effectController.newGround = true;
+		effectController.newGround = false;
 		effectController.newGridX = false;
 		effectController.newGridY = false;
 		effectController.newGridZ = false;
@@ -325,7 +318,7 @@ var TestModel = function (domElementID) {
 		mCalibrate.getInverse(QtoM(qFromMPU));
 		console.log("Calibrate Matrix:",mCalibrate.elements);
 	}
-	this.setForeArmGlobalRotationFromQuternion = function ( qq ) {
+	this.setGlobalRotationFromQuternion = function ( qq ) {
 		//read the Quaternion from MPU
 		qFromMPU.set(qq._x,qq._y,qq._z,qq._w);
 		//mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);

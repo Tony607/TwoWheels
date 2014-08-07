@@ -44,7 +44,7 @@
 				socket.on('message', function (msg) {
 					// Convert value to integer
 					if(msg){				
-						testModel.setForeArmGlobalRotationFromQuternion(msg);
+						testModel.setGlobalRotationFromQuternion(msg);
 						var eu = new THREE.Euler();
 						eu.setFromQuaternion(new THREE.Quaternion(msg._x,msg._y,msg.z,msg._w));
 						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
