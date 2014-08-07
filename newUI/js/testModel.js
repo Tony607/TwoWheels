@@ -320,7 +320,7 @@ var TestModel = function (domElementID) {
 	}
 	this.setGlobalRotationFromQuternion = function ( qq ) {
 		//read the Quaternion from MPU
-		qFromMPU.set(qq._x,qq._y,qq._z,qq._w);
+		qFromMPU.set(qq._y,qq._z,qq._x,qq._w);
 		//mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
 		mArmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
 	};

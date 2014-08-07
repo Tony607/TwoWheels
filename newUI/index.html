@@ -46,7 +46,7 @@
 					if(msg){				
 						testModel.setGlobalRotationFromQuternion(msg);
 						var eu = new THREE.Euler();
-						eu.setFromQuaternion(new THREE.Quaternion(msg._x,msg._y,msg.z,msg._w));
+						eu.setFromQuaternion(new THREE.Quaternion(msg._y,msg._z,msg._x,msg._w));
 						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
 					}
 				});
