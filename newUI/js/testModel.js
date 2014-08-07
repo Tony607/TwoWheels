@@ -19,8 +19,10 @@ var TestModel = function (domElementID) {
 	forearm;	
 	var qFromMPU = new THREE.Quaternion();
 	var mCalibrate = new THREE.Matrix4();
+	//Arm Global fix rotation matrix(fixed by arm IMU data)
+	var mArmGFixedRot = new THREE.Matrix4();
+	//Forearm Global fix rotation matrix(fixed by forearm IMU data)
 	var mForearmGFixedRot = new THREE.Matrix4();
-	var cnt = -90;
 	fillScene = function () {
 		scene = new THREE.Scene();
 		scene.fog = new THREE.Fog(0x808080, 2000, 4000);
@@ -93,11 +95,13 @@ var TestModel = function (domElementID) {
 		scene.add(torus);
 
 		forearm = new THREE.Object3D();
+		forearm.name = "forearm";
 		var faLength = 80;
 
 		createRobotExtender(forearm, faLength, robotForearmMaterial);
 
 		arm = new THREE.Object3D();
+		arm.name = "arm";
 		var uaLength = 120;
 
 		createRobotCrane(arm, uaLength, robotUpperArmMaterial);
@@ -107,6 +111,7 @@ var TestModel = function (domElementID) {
 		arm.add(forearm);
 
 		scene.add(arm);
+		scene.name = "THREE.Scene";
 	}
 
 	createRobotExtender = function (part, length, material) {
@@ -188,31 +193,62 @@ var TestModel = function (domElementID) {
 
 			fillScene();
 		}
-		if (cnt < 180) {
-			cnt = cnt + 0.5;
-		} else {
-			cnt = -180
-		}
-		//arm.rotation.x = effectController.ux * Math.PI/180;	// pitch
-		arm.rotation.x = cnt * Math.PI / 180; // pitch
-		arm.rotation.y = effectController.uy * Math.PI / 180; // yaw
-		arm.rotation.z = effectController.uz * Math.PI / 180; // roll
-
+		//matrix to store self local inverse matrix
 		var mselfInverse = new THREE.Matrix4();
+		//matrix to be applied on given Oject3D
+		var matrixToApply = new THREE.Matrix4();
+		/*Rotate Arm*/
+		
+		mArmGFixedRot.extractRotation(mArmGFixedRot);
+		mselfInverse.getInverse(arm.matrix);
+		mselfInverse.extractRotation(mselfInverse);
+		//mArmGFixedRot
+		//arm.applyMatrix(mselfInverse);
+		
+		matrixToApply.multiplyMatrices(mArmGFixedRot, mselfInverse);
+		matrixToApply.extractRotation(matrixToApply)
+		arm.applyMatrix(matrixToApply);
+		//arm.matrixWorld = mArmGFixedRot;
+		arm.updateMatrix();
+		/*Rotate Forearm*/
+		/*
+		1. get the self local inverse, extract rotation
+		2. calculate self local rotation given global rotation
+			2.1 forearmG = armL x forearmL => inverse(armL) x forearmG = forearmL
+		3. get the matrix that will apply to the forearm
+			3.1 forearmLocalRot x mselfInverse
+		4. apply this matrix to forearm
+		*/
+		//get the self local rotation matrix and extract only the rotation part
 		mselfInverse.getInverse(forearm.matrix);
 		mselfInverse.extractRotation(mselfInverse);
-		//rotate forearm back to local origine
+		//rotate forearm back to local origin
 		//forearm.applyMatrix(mselfInverse);
 		//apply the local rotation to forearm
 		var forearmLocalRot = new THREE.Matrix4();
+		//forearmLocalRot <= arm local inverse rotation matrix
 		forearmLocalRot.getInverse(forearmLocalRot.extractRotation(arm.matrix));
+		//forearmLocalRot <= forearm local rotation matrix when set to 
+		//a fixed global rotation matrix
 		forearmLocalRot.multiplyMatrices(forearmLocalRot, mForearmGFixedRot);
+		//extract only the rotation part of forearm local rotation matrix
 		forearmLocalRot.extractRotation(forearmLocalRot);
-		forearm.applyMatrix(forearmLocalRot.multiplyMatrices(forearmLocalRot, mselfInverse));
+		//apply self local inverse matrix to forearm, forearm local rotation set to 0
+		//then apply the forearmLocalRot matrix to get to the correct local forearm rotation
+		matrixToApply.multiplyMatrices(forearmLocalRot, mselfInverse);
+		matrixToApply.extractRotation(matrixToApply)
+		forearm.applyMatrix(matrixToApply);
+		//set the local Y position of forearm back to 120
 		forearm.position.setY(120);
 		// forearm.rotation.x = effectController.fx * Math.PI/180;	// pitch
 		// forearm.rotation.y = effectController.fy * Math.PI/180;	// yaw
 		// forearm.rotation.z = effectController.fz * Math.PI/180;	// roll
+		arm.scale.x = 1;
+		arm.scale.y = 1;
+		arm.scale.z = 1;
+		forearm.scale.x = 1;
+		forearm.scale.y = 1;
+		forearm.scale.z = 1;
 
 		renderer.render(scene, camera);
 	}
@@ -292,9 +328,8 @@ var TestModel = function (domElementID) {
 	this.setForeArmGlobalRotationFromQuternion = function ( qq ) {
 		//read the Quaternion from MPU
 		qFromMPU.set(qq._x,qq._y,qq._z,qq._w);
-		//mForearmGFixedRot
-		//mForearmGFixedRot = QtoM(qFromMPU);
-		mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
+		//mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
+		mArmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
 	};
 	QtoM = function(q){
 	    var m = new THREE.Matrix4(	1.0 - 2.0*q.y*q.y - 2.0*q.z*q.z, 	2.0*q.x*q.y - 2.0*q.z*q.w, 		2.0*q.x*q.z + 2.0*q.y*q.w, 		0.0,
