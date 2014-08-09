@@ -321,8 +321,13 @@ var TestModel = function (domElementID) {
 	this.setGlobalRotationFromQuternion = function ( qq ) {
 		//read the Quaternion from MPU
 		qFromMPU.set(qq._y,qq._z,qq._x,qq._w);
-		//mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
-		mArmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
+		if(qq.node == 0){
+			mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
+		}else
+		if(qq.node == 1){
+			mArmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
+		}
+		
 	};
 	QtoM = function(q){
 	    var m = new THREE.Matrix4(	1.0 - 2.0*q.y*q.y - 2.0*q.z*q.z, 	2.0*q.x*q.y - 2.0*q.z*q.w, 		2.0*q.x*q.z + 2.0*q.y*q.w, 		0.0,

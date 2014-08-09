@@ -97,8 +97,9 @@ Vector3 = function ( x, y, z ) {
 };
 
 var vect = new Vector3( Math.sqrt(1/2), 0, Math.sqrt(1/2) );
-Quaternion = function ( x, y, z, w ) {
+Quaternion = function (node, x, y, z, w ) {
 
+	this._node = node || 0;
 	this._x = x || 0;
 	this._y = y || 0;
 	this._z = z || 0;
@@ -109,8 +110,15 @@ Quaternion.prototype = {
 
 	constructor: Quaternion,
 
-	_x: 0,_y: 0, _z: 0, _w: 0,
+	_node: 0,_x: 0,_y: 0, _z: 0, _w: 0,
 
+	get node () {
+		return this._node;
+	},
+
+	set node ( value ) {
+		this._node = value;
+	},
 	get x () {
 		return this._x;
 	},
@@ -144,8 +152,9 @@ Quaternion.prototype = {
 		this._w = value;
 	},
 
-	set: function ( x, y, z, w ) {
+	set: function (node, x, y, z, w ) {
 
+		this._node = node;
 		this._x = x;
 		this._y = y;
 		this._z = z;
@@ -158,6 +167,7 @@ Quaternion.prototype = {
 		// assumes axis is normalized
 		var halfAngle = angle / 2, s = Math.sin( halfAngle );
 
+		this._node = 0;
 		this._x = axis.x * s;
 		this._y = axis.y * s;
 		this._z = axis.z * s;
@@ -209,12 +219,12 @@ if (!emulateSerialData) {
 					console.log('open');
 					arduinoPort.on('data', function (data) {
 						console.log(data.toString());
-						var str_parser = /^(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?)$/;
+						var str_parser = /^(\d+)\*(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?)$/;
 						var parsedArray = str_parser.exec(data.toString());
 						if(parsedArray){
-							var msg_q=new Quaternion(parseFloat(parsedArray[2]),parseFloat(parsedArray[3]),parseFloat(parsedArray[4]),parseFloat(parsedArray[1]));
+							var msg_q=new Quaternion(parseFloat(parsedArray[1]), parseFloat(parsedArray[3]),parseFloat(parsedArray[4]),parseFloat(parsedArray[5]),parseFloat(parsedArray[2]));
 							io.sockets.emit('message', msg_q);
-							console.log("x:",msg_q.x,"y:",msg_q.y,"z:",msg_q.z,"w:",msg_q.w);
+							console.log("node:",msg_q.node,"x:",msg_q.x,"y:",msg_q.y,"z:",msg_q.z,"w:",msg_q.w);
 						}
 					});
 					arduinoPort.write("ls\n", function (err, results) {
