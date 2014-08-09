@@ -204,15 +204,47 @@ catch (exception) {
 if (!emulateSerialData) {
 	console.log("---available serial ports---");
 	serialPort.list(function (err, ports) {
-		ports.forEach(function (port) {
-			console.log(port.comName);
-			console.log("pnpId:\t"+port.pnpId);
-			console.log("manufacturer:\t"+port.manufacturer);
-			if ((port.pnpId+port.manufacturer).indexOf("Arduino") >= 0) {
-				console.log("---Arduino port found---");
+		if(ports.length>0){
+			ports.forEach(function (port) {
+				console.log(port.comName);
+				console.log("pnpId:\t"+port.pnpId);
+				console.log("manufacturer:\t"+port.manufacturer);
+				if ((port.pnpId+port.manufacturer).indexOf("Arduino") >= 0) {
+					console.log("---Arduino port found---");
+					var serialport = require("serialport");
+					var SerialPort = serialport.SerialPort; // localize object constructor
+					arduinoPort = new SerialPort(port.comName, {
+							baudrate : 115200,
+							parser : serialPort.parsers.readline("#")
+						});
+					arduinoPort.on("open", function () {
+						console.log('open');
+						arduinoPort.on('data', function (data) {
+							console.log(data.toString());
+							var str_parser = /^(\d+)\*(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?)$/;
+							var parsedArray = str_parser.exec(data.toString());
+							if(parsedArray){
+								var msg_q=new Quaternion(parseFloat(parsedArray[1]), parseFloat(parsedArray[3]),parseFloat(parsedArray[4]),parseFloat(parsedArray[5]),parseFloat(parsedArray[2]));
+								io.sockets.emit('message', msg_q);
+								console.log("node:",msg_q.node,"x:",msg_q.x,"y:",msg_q.y,"z:",msg_q.z,"w:",msg_q.w);
+							}
+						});
+						arduinoPort.write("ls\n", function (err, results) {
+							console.log('err ' + err);
+							console.log('results ' + results);
+						});
+					});
+				}else{
+					console.log("---No Arduino Port discovered, using emulated serial data---");
+					emulateSerialData = true;
+				}
+			});
+		}else {
+			try{
+				console.log("---Try to connect to Bluetooth serial port /dev/rfcomm0---");
 				var serialport = require("serialport");
 				var SerialPort = serialport.SerialPort; // localize object constructor
-				arduinoPort = new SerialPort(port.comName, {
+				arduinoPort = new SerialPort("/dev/rfcomm0", {
 						baudrate : 115200,
 						parser : serialPort.parsers.readline("#")
 					});
@@ -233,10 +265,13 @@ if (!emulateSerialData) {
 						console.log('results ' + results);
 					});
 				});
-			}else{
-				console.log("---No Arduino Port discovered, using emulated serial data---");
-				emulateSerialData = true;
 			}
-		});
+			catch(exception){
+				console.log("Fail to connect to Bluetooth serial port. Please make sure bluetooth dongle is pluged and slave device is powered on.");
+				console.log("---No available Port discovered, using emulated serial data---");
+				emulateSerialData = true;
+				
+			}
+		}
 	});
 }
