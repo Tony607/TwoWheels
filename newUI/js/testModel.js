@@ -321,11 +321,11 @@ var TestModel = function (domElementID) {
 	this.setGlobalRotationFromQuternion = function ( qq ) {
 		//read the Quaternion from MPU
 		qFromMPU.set(qq._y,qq._z,qq._x,qq._w);
-		if(qq.node == 0){
-			mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
-		}else
-		if(qq.node == 1){
+		if(qq._node == 0){
 			mArmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
+		}else
+		if(qq._node == 1){
+			mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
 		}
 		
 	};

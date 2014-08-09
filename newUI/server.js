@@ -194,6 +194,7 @@ setInterval(function () {
 
 var serialPort;
 try {
+	console.log("trying to get serialport module...")
 	serialPort = require("serialport");	
 }
 catch (exception) {
