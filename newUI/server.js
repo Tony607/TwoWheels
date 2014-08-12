@@ -261,10 +261,10 @@ if (!emulateSerialData) {
 							console.log("node:",msg_q.node,"x:",msg_q.x,"y:",msg_q.y,"z:",msg_q.z,"w:",msg_q.w);
 						}
 					});
-					arduinoPort.write("ls\n", function (err, results) {
-						console.log('err ' + err);
-						console.log('results ' + results);
-					});
+// 					arduinoPort.write("ls\n", function (err, results) {
+// 						console.log('err ' + err);
+// 						console.log('results ' + results);
+// 					});
 				});
 			}
 			catch(exception){
