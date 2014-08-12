@@ -255,6 +255,7 @@ if (!emulateSerialData) {
 						var str_parser = /^(\d+)\*(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?):(-?\d+\.?\d*?)$/;
 						var parsedArray = str_parser.exec(data.toString());
 						if(parsedArray){
+							//node address, x, y, z ,w
 							var msg_q=new Quaternion(parseFloat(parsedArray[1]), parseFloat(parsedArray[3]),parseFloat(parsedArray[4]),parseFloat(parsedArray[5]),parseFloat(parsedArray[2]));
 							io.sockets.emit('message', msg_q);
 							console.log("node:",msg_q.node,"x:",msg_q.x,"y:",msg_q.y,"z:",msg_q.z,"w:",msg_q.w);

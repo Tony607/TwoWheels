@@ -326,6 +326,9 @@ var TestModel = function (domElementID) {
 		}else
 		if(qq._node == 1){
 			mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
+		}else
+		if(qq._node == 2){
+			//mForearmGFixedRot.multiplyMatrices(QtoM(qFromMPU), mCalibrate);
 		}
 		
 	};
