@@ -47,7 +47,6 @@
 						testModel.setGlobalRotationFromQuternion(msg);
 						var eu = new THREE.Euler();
 						eu.setFromQuaternion(new THREE.Quaternion(msg._y,msg._z,msg._x,msg._w));
-						displaydata.updatedisplay(eu.x * (180/Math.PI), eu.y * (180/Math.PI));
 					}
 				});
 			});
@@ -59,7 +58,6 @@
 			<h3>Arm Animation</h3>
 			<div id = "displaydata" role="main">							
 				Graph:<br/>
-				<div id="placeholder" style="width:300px;height:100px;"></div><br/>
 				<div id="container" style="height: 492px, width: 876px"></div>
 				<p>
 					<button id="docalibrate">Calibrate Orientation</button>
