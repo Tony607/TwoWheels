@@ -24,6 +24,7 @@ void setup()
   interrupts();             // enable all interrupts
   TCCR3B |= (1 << ICNC3);               // Input Capture Noise Canceler
   TCCR3B |= (1 << ICES3);               //Set capture rising edge
+  Serial1.begin(115200);
 }
 
 ISR(TIMER3_COMPA_vect)          // timer compare interrupt service routine
@@ -44,8 +45,8 @@ ISR(TIMER3_CAPT_vect){
 void loop()
 {
 	delay(50);
-	Serial.println(TCNT3);
-	Serial.print("W");
-	Serial.println(pulseWidth);
+	Serial1.println(TCNT3);
+	Serial1.print("W");
+	Serial1.println(pulseWidth);
 	digitalWrite(TRIG, digitalRead(TRIG) ^ 1);
 }
